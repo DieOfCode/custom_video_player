@@ -44,7 +44,7 @@ struct PlayerView: View {
             /// Custom Vide Player
             ZStack {
                 if let player = playerVM.player {
-                    CustomVideoPlayer(showFullScreen: $playerVM.showFullScreen, fullScreenTapped: $playerVM.fullScreenTapped, player: player)
+                    CustomVideoPlayer(showFullScreen: $playerVM.showFullScreen, fullScreenTapped: $playerVM.fullScreenTapped,playerViewModel:playerVM,player: player)
                         .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
                             DispatchQueue.main.async {
                                 print("change rotation->",UIDevice.current.orientation.rawValue)
@@ -57,10 +57,22 @@ struct PlayerView: View {
                                 }
                             }
                         }
+                        .onChange(of: player.timeControlStatus){
+                            newValue in
+                            if(newValue == .playing){
+                                playerVM.isPlaying = true
+                            }else{
+                                playerVM.isPlaying = false
+                            }
+                            
+                        }
                         .onChange(of: playerVM.fullScreenTapped){ newValue in
+                        
+                                playerVM.fullScreenTapped = newValue
                             if(newValue){
                                 playerVM.fullScreenTapped = false
                             }
+                        
                     
                         }
                         .edgesIgnoringSafeArea(playerVM.isRotated ? .all : .bottom)
@@ -103,8 +115,8 @@ struct PlayerView: View {
                             }
                         }
                         .overlay(alignment: .bottomLeading, content: {
-                            SeekerThumbnailView(videoPlayerSize)
-                                .offset(y: playerVM.isRotated ? -105 : -60)
+//                            SeekerThumbnailView(videoPlayerSize)
+//                                .offset(y: playerVM.isRotated ? -105 : -60)
                         })
                         .overlay(alignment: .bottom) {
                             ZStack{
@@ -247,7 +259,7 @@ struct PlayerView: View {
                 } label: {
                     Text("480").foregroundColor(.white).foregroundColor(.white).font(.system(size: 16))
                 }.buttonStyle(.bordered).tint(.white.opacity(selectedResolution == Resolution.p480 ? 1 : 0))
-            }.padding(4).background(Color.init(red: 0.36, green: 0.37, blue: 0.37)).cornerRadius(4).offset(x: -42,y: -40)
+            }.padding(4).background(Color.init(red: 0.36, green: 0.37, blue: 0.37)).cornerRadius(4).offset(x: -30,y: -40)
         } else{
             EmptyView()
         }
@@ -324,17 +336,17 @@ struct PlayerView: View {
                             }.padding(.trailing,10)
                             
                         }
-                        Button{
-                            
-                        } label:{
-                                Image(systemName: false ? "pip.remove": "pip")
-                                    .resizable()
-                                    .frame(width: 16,height: 16)
-                                    .font(.title)
-                                    .foregroundColor(.white)
-        
-                            
-                        }.padding(.trailing,10)
+//                        Button{
+//                            
+//                        } label:{
+//                                Image(systemName: false ? "pip.remove": "pip")
+//                                    .resizable()
+//                                    .frame(width: 16,height: 16)
+//                                    .font(.title)
+//                                    .foregroundColor(.white)
+//        
+//                            
+//                        }.padding(.trailing,10)
                         Button{
                             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                                 let orientation = windowScene.interfaceOrientation

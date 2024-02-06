@@ -63,8 +63,10 @@ final class PlayerViewModel:ObservableObject{
     }
     
     func selectResolution(resolution:Resolution){
+        
        selectedRate = resolution
         player?.currentItem?.preferredPeakBitRate = selectedRate.bitrateValue
+        showSelectRate = false
         
     }
     
